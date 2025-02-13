@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/oobit-crypto-balance-system-moshe-iftach/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/oobit-crypto-balance-system-moshe-iftach/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/oobit-crypto-balance-system-moshe-iftach",
+  "projects": {
+    "balance": {
+      "type": "application",
+      "root": "apps/balance",
+      "entryFile": "main",
+      "sourceRoot": "apps/balance/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/balance/tsconfig.app.json"
+      }
+    },
+    "oobit-crypto-balance-system-moshe-iftach": {
+      "type": "application",
+      "root": "apps/oobit-crypto-balance-system-moshe-iftach",
+      "entryFile": "main",
+      "sourceRoot": "apps/oobit-crypto-balance-system-moshe-iftach/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/oobit-crypto-balance-system-moshe-iftach/tsconfig.app.json"
+      }
+    },
+    "rate": {
+      "type": "application",
+      "root": "apps/rate",
+      "entryFile": "main",
+      "sourceRoot": "apps/rate/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/rate/tsconfig.app.json"
+      }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    }
+  }
+}
