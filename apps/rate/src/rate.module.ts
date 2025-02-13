@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { RateController } from './rate.controller';
+import { ScheduleModule } from '@nestjs/schedule';
 import { RateService } from './rate.service';
+import { RateController } from './rate.controller';
 
 @Module({
-  imports: [],
+  imports: [ScheduleModule.forRoot()],
   controllers: [RateController],
   providers: [RateService],
 })
