@@ -47,4 +47,13 @@ export class BalanceController {
   ): Promise<number> {
     return this.balanceService.getTotalBalance(userId, currency);
   }
+
+  @Post('rebalance')
+  @Header('X-User-ID', ':userId')
+  async rebalance(
+    @Param('userId') userId: string,
+    @Body() targetPercentages: Record<string, number>,
+  ): Promise<void> {
+    return this.balanceService.rebalance(userId, targetPercentages);
+  }
 }

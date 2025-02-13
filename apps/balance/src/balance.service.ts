@@ -56,4 +56,27 @@ export class BalanceService {
     }
     return total;
   }
+
+  async rebalance(
+    userId: string,
+    targetPercentages: Record<string, number>,
+  ): Promise<void> {
+    const balances = await this.getBalances(userId);
+    const rates = await this.rateService.getRates();
+    const totalValue = await this.getTotalBalance(userId, 'usd');
+
+    const newBalances = {};
+    for (const [asset, percentage] of Object.entries(targetPercentages)) {
+      const targetValue = (percentage / 100) * totalValue;
+      const rate = rates[asset]?.usd;
+      if (rate) {
+        newBalances[asset] = targetValue / rate;
+      }
+    }
+
+    this.fileManager.writeFile(this.userBalancesFile, {
+      ...balances,
+      [userId]: newBalances,
+    });
+  }
 }
