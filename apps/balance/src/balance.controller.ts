@@ -38,4 +38,13 @@ export class BalanceController {
   ): Promise<void> {
     return this.balanceService.removeBalance(userId, asset, amount);
   }
+
+  @Get('total/:currency')
+  @Header('X-User-ID', ':userId')
+  async getTotalBalance(
+    @Param('userId') userId: string,
+    @Param('currency') currency: string,
+  ): Promise<number> {
+    return this.balanceService.getTotalBalance(userId, currency);
+  }
 }

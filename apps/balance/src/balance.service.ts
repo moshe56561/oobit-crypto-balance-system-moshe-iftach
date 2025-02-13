@@ -43,4 +43,17 @@ export class BalanceService {
     }
     this.fileManager.writeFile(this.userBalancesFile, balances);
   }
+
+  async getTotalBalance(userId: string, currency: string): Promise<number> {
+    const balances = await this.getBalances(userId);
+    const rates = await this.rateService.getRates();
+    let total = 0;
+    for (const [asset, amount] of Object.entries(balances)) {
+      if (rates[asset] && rates[asset][currency]) {
+        if (typeof amount === 'number')
+          total += amount * rates[asset][currency];
+      }
+    }
+    return total;
+  }
 }
