@@ -1,22 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BalanceController } from './balance.controller';
 import { BalanceService } from './balance.service';
+import { FileManagerService } from '@app/shared/file-manager/file-manager.service';
+import { RateService } from '../../rate/src/rate.service';
 
-describe('BalanceController', () => {
-  let balanceController: BalanceController;
+describe('BalanceService', () => {
+  let service: BalanceService;
+  let fileManager: FileManagerService;
+  let rateService: RateService;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      controllers: [BalanceController],
-      providers: [BalanceService],
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        BalanceService,
+        {
+          provide: FileManagerService,
+          useValue: {
+            readFile: jest.fn(),
+            writeFile: jest.fn(),
+          },
+        },
+        {
+          provide: RateService,
+          useValue: {
+            getRates: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
-    balanceController = app.get<BalanceController>(BalanceController);
+    service = module.get<BalanceService>(BalanceService);
+    fileManager = module.get<FileManagerService>(FileManagerService);
+    rateService = module.get<RateService>(RateService);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(balanceController.getHello()).toBe('Hello World!');
-    });
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
+
+  // Add more tests for each method
 });
