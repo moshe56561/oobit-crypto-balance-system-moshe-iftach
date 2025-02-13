@@ -5,8 +5,8 @@ import { LoggerModule } from './logger/logger.module';
 import { ErrorHandlingModule } from './error-handling/error-handling.module';
 
 @Module({
-  providers: [SharedService],
-  exports: [SharedService],
+  providers: [SharedService], // Only provide SharedService
+  exports: [SharedService, FileManagerModule], // Export SharedService and FileManagerModule
   imports: [FileManagerModule, LoggerModule, ErrorHandlingModule],
 })
 export class SharedModule {}
