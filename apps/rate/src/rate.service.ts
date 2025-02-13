@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import axios from 'axios';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { FileManagerService } from '@app/shared/file-manager/file-manager.service';
-import { Cron, CronExpression } from '@nestjs/schedule';
+
+import axios from 'axios';
 
 @Injectable()
-export class RateService {
+export class RateService implements OnModuleInit {
   private readonly ratesFile = 'rates.json';
   private readonly coinGeckoUrl =
     'https://api.coingecko.com/api/v3/simple/price';
@@ -17,14 +17,22 @@ export class RateService {
   constructor(private readonly fileManager: FileManagerService) {}
 
   async fetchRates(): Promise<void> {
-    const response = await axios.get(this.coinGeckoUrl, {
-      params: {
-        ids: 'bitcoin,ethereum,oobit',
-        vs_currencies: 'usd',
-      },
-    });
-    this.cache = { rates: response.data, timestamp: Date.now() };
-    this.fileManager.writeFile(this.ratesFile, response.data);
+    try {
+      const response = await axios.get(this.coinGeckoUrl, {
+        params: {
+          ids: 'bitcoin,ethereum,oobit',
+          vs_currencies: 'usd',
+        },
+        timeout: 5000, // Prevents long hangs
+      });
+
+      this.cache = { rates: response.data, timestamp: Date.now() };
+
+      await this.fileManager.writeFile(this.ratesFile, response.data);
+      console.log(`✅ Rates successfully written to ${this.ratesFile}`);
+    } catch (error) {
+      console.error('❌ Error fetching rates:', error);
+    }
   }
 
   async getRates(): Promise<any> {
@@ -35,8 +43,7 @@ export class RateService {
     return this.cache.rates;
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
-  async handleCron() {
-    await this.fetchRates();
+  onModuleInit() {
+    console.log('🚀 RateService initialized');
   }
 }
