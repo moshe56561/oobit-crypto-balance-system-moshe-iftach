@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { FileManagerService } from '@app/shared/file-manager/file-manager.service';
+import { RateService } from '../../rate/src/rate.service'; // Import the RateModule
 
 @Injectable()
 export class BalanceService {
   private readonly userBalancesFile = 'user-balances.json';
 
-  constructor(private readonly fileManager: FileManagerService) {}
-
+  constructor(
+    private readonly fileManager: FileManagerService,
+    private readonly rateService: RateService,
+  ) {}
   async getBalances(userId: string): Promise<any> {
     const balances = this.fileManager.readFile(this.userBalancesFile);
     return balances[userId] || {};

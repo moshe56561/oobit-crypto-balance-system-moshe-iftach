@@ -7,5 +7,6 @@ import { RateController } from './rate.controller';
   imports: [ScheduleModule.forRoot()],
   controllers: [RateController],
   providers: [RateService],
+  exports: [RateService], // Export the RateService here
 })
 export class RateModule {}
