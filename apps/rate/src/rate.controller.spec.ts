@@ -13,10 +13,4 @@ describe('RateController', () => {
 
     rateController = app.get<RateController>(RateController);
   });
-
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(rateController.getHello()).toBe('Hello World!');
-    });
-  });
 });

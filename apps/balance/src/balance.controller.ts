@@ -6,13 +6,16 @@ import {
   Headers,
   Param,
   Body,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { BalanceService } from './balance.service';
+import { ErrorHandlingService } from '@app/shared/error-handling/error-handling.service'; // Import the error handling service
 
 @Controller('balance')
 export class BalanceController {
-  constructor(private readonly balanceService: BalanceService) {}
+  constructor(
+    private readonly balanceService: BalanceService,
+    private readonly errorHandlingService: ErrorHandlingService, // Inject error handling service
+  ) {}
 
   @Post('rebalance')
   async rebalance(
@@ -20,11 +23,9 @@ export class BalanceController {
     @Body() targetPercentages: Record<string, number>,
   ): Promise<void> {
     try {
-      return this.balanceService.rebalance(userId, targetPercentages);
+      return await this.balanceService.rebalance(userId, targetPercentages);
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to rebalance: ' + error.message,
-      );
+      this.errorHandlingService.handleError(error, true, 'Failed to rebalance'); // Provide custom message
     }
   }
 
@@ -34,11 +35,14 @@ export class BalanceController {
     @Param('currency') currency: string,
   ): Promise<number> {
     try {
-      return this.balanceService.getTotalBalance(userId, currency);
+      return await this.balanceService.getTotalBalance(userId, currency);
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to get total balance: ' + error.message,
-      );
+      this.errorHandlingService.handleError(
+        error,
+        true,
+        'Failed to get total balance',
+      ); // Provide custom message
+      return 0; // Return a default value or handle it accordingly
     }
   }
 
@@ -47,11 +51,13 @@ export class BalanceController {
     @Headers('X-User-ID') userId: string, // Correctly access 'X-User-ID' header
   ): Promise<any> {
     try {
-      return this.balanceService.getBalances(userId);
+      return await this.balanceService.getBalances(userId);
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to get balances: ' + error.message,
-      );
+      this.errorHandlingService.handleError(
+        error,
+        true,
+        'Failed to get balances',
+      ); // Provide custom message
     }
   }
 
@@ -62,11 +68,13 @@ export class BalanceController {
     @Body('amount') amount: number,
   ): Promise<any> {
     try {
-      return this.balanceService.addBalance(userId, asset, amount);
+      return await this.balanceService.addBalance(userId, asset, amount);
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to add balance: ' + error.message,
-      );
+      this.errorHandlingService.handleError(
+        error,
+        true,
+        'Failed to add balance',
+      ); // Provide custom message
     }
   }
 
@@ -77,11 +85,13 @@ export class BalanceController {
     @Body('amount') amount: number,
   ): Promise<void> {
     try {
-      return this.balanceService.removeBalance(userId, asset, amount);
+      return await this.balanceService.removeBalance(userId, asset, amount);
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to remove balance: ' + error.message,
-      );
+      this.errorHandlingService.handleError(
+        error,
+        true,
+        'Failed to remove balance',
+      ); // Provide custom message
     }
   }
 }

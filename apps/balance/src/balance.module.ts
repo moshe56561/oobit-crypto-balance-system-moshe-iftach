@@ -3,18 +3,16 @@ import { BalanceController } from './balance.controller';
 import { BalanceService } from './balance.service';
 import { SharedModule } from '@app/shared';
 import { MicroservicesClientModule } from '@app/shared/microservices-client/microservices-client.module';
-import { Transport } from '@nestjs/microservices';
+import { MICRO_SERVICES } from '@app/shared/constants/microservices';
+import { ErrorHandlingModule } from '@app/shared/error-handling/error-handling.module';
+import { LoggerModule } from '@app/shared/logger/logger.module';
 
 @Module({
   imports: [
     SharedModule,
-    MicroservicesClientModule.register([
-      {
-        name: 'RATE_SERVICE',
-        transport: Transport.TCP,
-        options: { host: 'localhost', port: 3000 },
-      },
-    ]),
+    ErrorHandlingModule,
+    LoggerModule,
+    MicroservicesClientModule.register([MICRO_SERVICES.RATE]),
   ],
   controllers: [BalanceController],
   providers: [BalanceService],
