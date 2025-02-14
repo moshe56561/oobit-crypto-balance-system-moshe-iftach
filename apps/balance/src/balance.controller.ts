@@ -6,6 +6,7 @@ import {
   Headers,
   Param,
   Body,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { BalanceService } from './balance.service';
 
@@ -18,7 +19,13 @@ export class BalanceController {
     @Headers('X-User-ID') userId: string, // Correctly access 'X-User-ID' header
     @Body() targetPercentages: Record<string, number>,
   ): Promise<void> {
-    return this.balanceService.rebalance(userId, targetPercentages);
+    try {
+      return this.balanceService.rebalance(userId, targetPercentages);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to rebalance: ' + error.message,
+      );
+    }
   }
 
   @Get('total/:currency')
@@ -26,14 +33,26 @@ export class BalanceController {
     @Headers('X-User-ID') userId: string, // Correctly access 'X-User-ID' header
     @Param('currency') currency: string,
   ): Promise<number> {
-    return this.balanceService.getTotalBalance(userId, currency);
+    try {
+      return this.balanceService.getTotalBalance(userId, currency);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to get total balance: ' + error.message,
+      );
+    }
   }
 
   @Get()
   async getBalances(
     @Headers('X-User-ID') userId: string, // Correctly access 'X-User-ID' header
   ): Promise<any> {
-    return this.balanceService.getBalances(userId);
+    try {
+      return this.balanceService.getBalances(userId);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to get balances: ' + error.message,
+      );
+    }
   }
 
   @Post('add')
@@ -42,7 +61,13 @@ export class BalanceController {
     @Body('asset') asset: string,
     @Body('amount') amount: number,
   ): Promise<any> {
-    return this.balanceService.addBalance(userId, asset, amount);
+    try {
+      return this.balanceService.addBalance(userId, asset, amount);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to add balance: ' + error.message,
+      );
+    }
   }
 
   @Delete('remove')
@@ -51,6 +76,12 @@ export class BalanceController {
     @Body('asset') asset: string,
     @Body('amount') amount: number,
   ): Promise<void> {
-    return this.balanceService.removeBalance(userId, asset, amount);
+    try {
+      return this.balanceService.removeBalance(userId, asset, amount);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to remove balance: ' + error.message,
+      );
+    }
   }
 }

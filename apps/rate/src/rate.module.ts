@@ -1,14 +1,14 @@
-import { Module, forwardRef, Global } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { RateController } from './rate.controller';
 import { RateService } from './rate.service';
-import { SharedModule } from '@app/shared'; // Import the SharedModule
-import { RateQueueModule } from './rate-queue/rate-queue.module'; // Import the RateQueueModule
+import { SharedModule } from '@app/shared';
+import { RateQueueModule } from './rate-queue/rate-queue.module';
 
-@Global() // Make sure RateService is available globally
+@Global()
 @Module({
-  imports: [SharedModule, forwardRef(() => RateQueueModule)], // Use forwardRef()
+  imports: [SharedModule, RateQueueModule],
   controllers: [RateController],
   providers: [RateService],
-  exports: [RateService], // Export the RateService for global use
+  exports: [RateService], // Export only RateService, not ClientsModule
 })
 export class RateModule {}

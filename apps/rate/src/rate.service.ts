@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { FileManagerService } from '@app/shared/file-manager/file-manager.service';
-
+import { MessagePattern } from '@nestjs/microservices';
 import axios from 'axios';
 
 @Injectable()
@@ -41,6 +41,11 @@ export class RateService implements OnModuleInit {
     }
     await this.fetchRates();
     return this.cache.rates;
+  }
+
+  @MessagePattern({ cmd: 'getRates' }) // Handle the getRates command from microservices
+  async getRatesMicroservice(): Promise<any> {
+    return this.getRates();
   }
 
   onModuleInit() {
