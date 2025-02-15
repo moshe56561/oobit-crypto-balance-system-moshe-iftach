@@ -1,11 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { FileManagerService } from '@app/shared/file-manager/file-manager.service';
-import { MessagePattern } from '@nestjs/microservices';
 import axios from 'axios';
-import { MESSAGE_CONSTANTS } from '@app/shared/constants/messages'; // Import the message constants
 import { FILE_CONSTANTS } from '@app/shared/constants/files'; // Import file constants
 import { ErrorHandlingService } from '@app/shared/error-handling/error-handling.service'; // Import the error handling service
 import { LoggerService } from '@app/shared/logger/logger.service'; // Import the logger service
+import { TICKER_MAP } from '@app/shared/constants/ticker-mapping';
 
 @Injectable()
 export class RateService implements OnModuleInit {
@@ -28,13 +27,22 @@ export class RateService implements OnModuleInit {
     try {
       const response = await axios.get(this.coinGeckoUrl, {
         params: {
-          ids: 'bitcoin,ethereum,oobit',
+          ids: 'bitcoin,ethereum,oobit', // Make sure to adjust this as needed
           vs_currencies: 'usd',
         },
         timeout: 5000, // Prevents long hangs
       });
 
       this.cache = { rates: response.data, timestamp: Date.now() };
+
+      // Check if the fetched coins exist in TICKER_MAP and log if not
+      for (const coin in response.data) {
+        if (!(coin.toLowerCase() in TICKER_MAP)) {
+          this.logger.log(
+            `⚠️ The coin ${coin} does not exist in the TICKER_MAP and needs to be added.`,
+          );
+        }
+      }
 
       await this.fileManager.writeFile(this.ratesFile, response.data);
       this.logger.log(`✅ Rates successfully written to ${this.ratesFile}`);
@@ -52,12 +60,7 @@ export class RateService implements OnModuleInit {
     return this.cache.rates;
   }
 
-  @MessagePattern({ cmd: MESSAGE_CONSTANTS.RATE_SERVICE.GET_RATES })
-  async getRatesMicroservice(): Promise<any> {
-    return this.getRates();
-  }
-
   onModuleInit() {
-    this.logger.log('🚀 RateService initialized'); // Use the logger here
+    this.logger.log('RateService initialized...'); // Use the logger here
   }
 }

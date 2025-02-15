@@ -1,11 +1,12 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { FileManagerService } from '@app/shared/file-manager/file-manager.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { MICRO_SERVICES } from '@app/shared/constants/microservices';
-import { MESSAGE_CONSTANTS } from '@app/shared/constants/messages'; // Import the message constants
-import { FILE_CONSTANTS } from '@app/shared/constants/files'; // Import file constants
-import { ErrorHandlingService } from '@app/shared/error-handling/error-handling.service'; // Import the error handling service
+import { MESSAGE_CONSTANTS } from '@app/shared/constants/messages';
+import { FILE_CONSTANTS } from '@app/shared/constants/files';
+import { ErrorHandlingService } from '@app/shared/error-handling/error-handling.service';
+import { normalizeAsset } from '@app/shared/utils/normalize-asset';
 
 @Injectable()
 export class BalanceService {
@@ -13,19 +14,42 @@ export class BalanceService {
     FILE_CONSTANTS.BALANCE_SERVICE.USER_BALANCES_FILE;
 
   constructor(
-    private readonly fileManager: FileManagerService,
     @Inject(MICRO_SERVICES.RATE.name) private readonly rateClient: ClientProxy,
-    private readonly errorHandlingService: ErrorHandlingService, // Inject error handling service
+    private readonly fileManager: FileManagerService,
+    private readonly errorHandlingService: ErrorHandlingService,
   ) {}
+
+  private checkUserExists(userId: string): void {
+    const allBalances = this.fileManager.readFile(this.userBalancesFile);
+    if (!allBalances[userId]) {
+      throw new HttpException(
+        `User with ID ${userId} does not exist.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
 
   async rebalance(
     userId: string,
     targetPercentages: Record<string, number>,
   ): Promise<void> {
     try {
-      const balances = await this.getBalances(userId);
-      const rates = await this.getRatesWithFallback();
+      this.checkUserExists(userId); // Check if user exists
 
+      // Ensure total percentages add up to exactly 100%
+      const totalPercentage = Object.values(targetPercentages).reduce(
+        (sum, p) => sum + p,
+        0,
+      );
+      if (Math.abs(totalPercentage - 100) > 0.0001) {
+        // Allow small floating-point errors
+        throw new HttpException(
+          'Rebalance cannot be performed. The total asset allocation must be exactly 100%.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const rates = await this.getRatesWithFallback();
       if (!rates || Object.keys(rates).length === 0) {
         return; // Skip rebalance if rates are unavailable
       }
@@ -34,10 +58,12 @@ export class BalanceService {
       const newBalances: Record<string, number> = {};
 
       for (const [asset, percentage] of Object.entries(targetPercentages)) {
+        const normalizedAsset = normalizeAsset(asset); // Normalize the asset
         const targetValue = (percentage / 100) * totalValue;
-        const rate = rates[asset]?.usd;
+        const rate = rates[normalizedAsset]?.usd; // Use normalized asset
+
         if (rate) {
-          newBalances[asset] = targetValue / rate;
+          newBalances[normalizedAsset] = targetValue / rate;
         }
       }
 
@@ -45,13 +71,17 @@ export class BalanceService {
       const allBalances = this.fileManager.readFile(this.userBalancesFile);
       allBalances[userId] = newBalances;
       this.fileManager.writeFile(this.userBalancesFile, allBalances);
+
+      return allBalances[userId];
     } catch (error) {
-      this.errorHandlingService.handleError(error, true); // Pass `true` to re-throw error if needed
+      this.errorHandlingService.handleError(error, true);
     }
   }
 
   async getTotalBalance(userId: string, currency: string): Promise<number> {
     try {
+      this.checkUserExists(userId); // Check if user exists
+
       const balances = await this.getBalances(userId);
       const rates = await this.getRatesWithFallback();
 
@@ -60,11 +90,12 @@ export class BalanceService {
       }
 
       return Object.entries(balances).reduce((total, [asset, amount]) => {
-        return total + (rates[asset]?.[currency] ?? 0) * amount;
+        const normalizedAsset = normalizeAsset(asset); // Normalize the asset
+        return total + (rates[normalizedAsset]?.[currency] ?? 0) * amount; // Use normalized asset
       }, 0);
     } catch (error) {
-      this.errorHandlingService.handleError(error, true); // Pass `true` to re-throw error if needed
-      return 0; // Return a default value in case of error
+      this.errorHandlingService.handleError(error, true);
+      return 0;
     }
   }
 
@@ -95,10 +126,18 @@ export class BalanceService {
 
   async getBalances(userId: string): Promise<Record<string, number>> {
     try {
+      this.checkUserExists(userId); // Check if user exists
+
       const balances = this.fileManager.readFile(this.userBalancesFile);
-      return balances[userId] || {};
+      // Normalize asset names in the balances
+      const normalizedBalances: Record<string, number> = {};
+      for (const asset in balances[userId]) {
+        const normalizedAsset = normalizeAsset(asset); // Normalize the asset
+        normalizedBalances[normalizedAsset] = balances[userId][asset];
+      }
+      return normalizedBalances;
     } catch (error) {
-      this.errorHandlingService.handleError(error, true); // Pass `true` to re-throw error if needed
+      this.errorHandlingService.handleError(error, true);
       return {}; // Return an empty object in case of error
     }
   }
@@ -109,16 +148,22 @@ export class BalanceService {
     amount: number,
   ): Promise<any> {
     try {
+      const normalizedAsset = normalizeAsset(asset); // Normalize the asset
       let balances = this.fileManager.readFile(this.userBalancesFile);
       if (!balances[userId]) {
         balances[userId] = {};
       }
-      balances[userId][asset] = (balances[userId][asset] || 0) + amount;
+      balances[userId][normalizedAsset] =
+        (balances[userId][normalizedAsset] || 0) + amount;
       this.fileManager.writeFile(this.userBalancesFile, balances);
 
-      return { userId, asset, balance: balances[userId][asset] };
+      return {
+        userId,
+        asset: normalizedAsset,
+        balance: balances[userId][normalizedAsset],
+      };
     } catch (error) {
-      this.errorHandlingService.handleError(error, true); // Pass `true` to re-throw error if needed
+      this.errorHandlingService.handleError(error, true);
     }
   }
 
@@ -128,8 +173,11 @@ export class BalanceService {
     amount: number,
   ): Promise<void> {
     try {
+      this.checkUserExists(userId); // Check if user exists
+
+      const normalizedAsset = normalizeAsset(asset); // Normalize the asset
       const balances = this.fileManager.readFile(this.userBalancesFile);
-      if (!balances[userId] || !balances[userId][asset]) {
+      if (!balances[userId] || !balances[userId][normalizedAsset]) {
         this.errorHandlingService.handleError(
           new Error('Asset not found'),
           true,
@@ -137,13 +185,13 @@ export class BalanceService {
         );
       }
 
-      balances[userId][asset] -= amount;
-      if (balances[userId][asset] <= 0) {
-        delete balances[userId][asset];
+      balances[userId][normalizedAsset] -= amount;
+      if (balances[userId][normalizedAsset] <= 0) {
+        delete balances[userId][normalizedAsset];
       }
       this.fileManager.writeFile(this.userBalancesFile, balances);
     } catch (error) {
-      this.errorHandlingService.handleError(error, true); // Pass `true` to re-throw error if needed
+      this.errorHandlingService.handleError(error, true);
     }
   }
 }

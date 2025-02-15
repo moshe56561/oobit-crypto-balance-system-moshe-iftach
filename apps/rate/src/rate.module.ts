@@ -11,6 +11,6 @@ import { LoggerModule } from '@app/shared/logger/logger.module';
   imports: [SharedModule, RateQueueModule, ErrorHandlingModule, LoggerModule],
   controllers: [RateController],
   providers: [RateService],
-  exports: [RateService], // Export only RateService, not ClientsModule
+  exports: [RateService], // Export only RateService, not ClientsModule=
 })
 export class RateModule {}
