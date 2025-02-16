@@ -113,7 +113,7 @@ export class BalanceService {
       }
 
       const balances = await this.getBalances(userId);
-      const rates = await this.getRatesWithFallback();
+      const rates = this.fileManager.readFile(this.ratesFile);
 
       if (!rates || Object.keys(rates).length === 0) {
         return 0; // Return 0 if rates are unavailable
@@ -151,7 +151,7 @@ export class BalanceService {
       const allBalances = this.fileManager.readFile(
         this.userBalancesFile,
       ) as Record<string, Record<string, number>>;
-      const rates = await this.getRatesWithFallback();
+      const rates = this.fileManager.readFile(this.ratesFile);
 
       if (!rates || Object.keys(rates).length === 0) {
         return 0; // Return 0 if rates are unavailable
@@ -282,16 +282,16 @@ export class BalanceService {
       // Read the rates file and check if the asset exists
       let rates = this.fileManager.readFile(this.ratesFile);
 
-      if (!rates[currentAsset]) {
-        // If asset is not in ratesFile, check with RateService
-        const unsupportedRates =
-          await this.getRatesWithIdsFallback(currentAsset);
-        rates = { ...rates, ...unsupportedRates };
-      }
-
       const normalizedAssetName = rates[currentAsset]?.normalizedName
         ? rates[currentAsset].normalizedName
         : currentAsset;
+
+      if (!rates[normalizedAssetName]) {
+        // If asset is not in ratesFile, check with RateService
+        const unsupportedRates =
+          await this.getRatesWithIdsFallback(normalizedAssetName);
+        rates = { ...rates, ...unsupportedRates };
+      }
 
       balances[userId][normalizedAssetName] =
         (balances[userId][normalizedAssetName] || 0) + amount;
