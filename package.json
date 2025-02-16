@@ -23,6 +23,7 @@
     "start:all": "concurrently \"npm run start:rate\" \"npm run start:balance\""
   },
   "dependencies": {
+    "@nestjs/axios": "^4.0.0",
     "@nestjs/bull": "^11.0.2",
     "@nestjs/common": "^11.0.9",
     "@nestjs/core": "^11.0.9",

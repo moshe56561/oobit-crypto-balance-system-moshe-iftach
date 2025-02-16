@@ -4,6 +4,10 @@ import { FileManagerService } from '@app/shared/file-manager/file-manager.servic
 import { ErrorHandlingService } from '@app/shared/error-handling/error-handling.service';
 import { LoggerService } from '@app/shared/logger/logger.service';
 import axios from 'axios';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+const baseCurrency = process.env.BASE_CURRENCY?.toUpperCase() || 'USD';
 
 jest.mock('axios'); // Mock axios
 
@@ -61,13 +65,16 @@ describe('RateService', () => {
 
   describe('fetchRates', () => {
     it('should fetch rates and update cache', async () => {
-      const mockRates = { bitcoin: { usd: 50000 }, ethereum: { usd: 4000 } };
+      const mockRates = {
+        bitcoin: { [baseCurrency]: 50000 },
+        ethereum: { [baseCurrency]: 4000 },
+      };
       (axios.get as jest.Mock).mockResolvedValue({ data: mockRates });
 
       await service.fetchRates();
 
       expect(axios.get).toHaveBeenCalledWith(service['coinGeckoUrl'], {
-        params: { ids: 'bitcoin,ethereum,oobit', vs_currencies: 'usd' },
+        params: { ids: 'bitcoin,ethereum,oobit', vs_currencies: baseCurrency },
         timeout: 5000,
       });
       expect(service['cache'].rates).toEqual(mockRates);
@@ -81,7 +88,7 @@ describe('RateService', () => {
     });
 
     it('should log a warning if a coin is not in TICKER_MAP', async () => {
-      const mockRates = { unknowncoin: { usd: 100 } };
+      const mockRates = { unknowncoin: { [baseCurrency]: 100 } };
       (axios.get as jest.Mock).mockResolvedValue({ data: mockRates });
 
       await service.fetchRates();
@@ -106,7 +113,7 @@ describe('RateService', () => {
 
   describe('getRates', () => {
     it('should return cached rates if cache is valid', async () => {
-      const mockRates = { bitcoin: { usd: 50000 } };
+      const mockRates = { bitcoin: { [baseCurrency]: 50000 } };
       service['cache'] = { rates: mockRates, timestamp: Date.now() };
 
       const result = await service.getRates();
@@ -116,7 +123,7 @@ describe('RateService', () => {
     });
 
     it('should fetch new rates if cache is expired', async () => {
-      const mockRates = { bitcoin: { usd: 50000 } };
+      const mockRates = { bitcoin: { [baseCurrency]: 50000 } };
       service['cache'] = { rates: null, timestamp: Date.now() - 70000 }; // Expired cache
       (axios.get as jest.Mock).mockResolvedValue({ data: mockRates });
 

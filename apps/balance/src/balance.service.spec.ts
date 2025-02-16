@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { BalanceService } from './balance.service';
 import { FileManagerService } from '@app/shared/file-manager/file-manager.service';
@@ -5,6 +8,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ErrorHandlingService } from '@app/shared/error-handling/error-handling.service';
 import { MICRO_SERVICES } from '@app/shared/constants/microservices';
 
+const baseCurrency = process.env.BASE_CURRENCY?.toUpperCase() || 'USD';
 describe('BalanceService', () => {
   let balanceService: BalanceService;
   let fileManager: FileManagerService;
@@ -45,7 +49,10 @@ describe('BalanceService', () => {
     it('should rebalance successfully', async () => {
       const userId = 'user1';
       const targetPercentages = { asset1: 50, asset2: 50 };
-      const rates = { asset1: { usd: 1 }, asset2: { usd: 1 } };
+      const rates = {
+        asset1: { [baseCurrency]: 1 },
+        asset2: { [baseCurrency]: 1 },
+      };
       const totalBalance = 100;
 
       jest

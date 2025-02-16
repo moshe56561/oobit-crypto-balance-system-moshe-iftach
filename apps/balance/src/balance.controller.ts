@@ -94,4 +94,34 @@ export class BalanceController {
       ); // Provide custom message
     }
   }
+
+  @Get('total-all/:currency')
+  async getTotalBalanceOfAllUsers(
+    @Param('currency') currency: string,
+  ): Promise<number> {
+    try {
+      return await this.balanceService.getTotalBalanceOfAllUsers(currency);
+    } catch (error) {
+      this.errorHandlingService.handleError(
+        error,
+        true,
+        'Failed to get total balance of all users',
+      );
+      return 0; // Return a default value or handle it accordingly
+    }
+  }
+
+  @Get('all')
+  async getAllBalances(): Promise<Record<string, Record<string, number>>> {
+    try {
+      return await this.balanceService.getAllBalances();
+    } catch (error) {
+      this.errorHandlingService.handleError(
+        error,
+        true,
+        'Failed to get all balances',
+      ); // Provide custom message
+      return {}; // Return an empty object in case of error
+    }
+  }
 }

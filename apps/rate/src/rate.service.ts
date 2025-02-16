@@ -1,69 +1,5 @@
-// import { Injectable, OnModuleInit } from '@nestjs/common';
-// import { FileManagerService } from '@app/shared/file-manager/file-manager.service';
-// import axios from 'axios';
-// import { FILE_CONSTANTS } from '@app/shared/constants/files'; // Import file constants
-// import { ErrorHandlingService } from '@app/shared/error-handling/error-handling.service'; // Import the error handling service
-// import { LoggerService } from '@app/shared/logger/logger.service'; // Import the logger service
-// import { TICKER_MAP } from '@app/shared/constants/ticker-mapping';
-
-// @Injectable()
-// export class RateService implements OnModuleInit {
-//   private readonly ratesFile = FILE_CONSTANTS.RATE_SERVICE.RATES_FILE;
-//   private readonly coinGeckoUrl =
-//     'https://api.coingecko.com/api/v3/simple/price';
-//   private cache: { rates: any; timestamp: number } = {
-//     rates: null,
-//     timestamp: 0,
-//   };
-//   private readonly cacheTTL = 60000; // 1 minute
-
-//   constructor(
-//     private readonly fileManager: FileManagerService,
-//     private readonly errorHandlingService: ErrorHandlingService, // Inject error handling service
-//     private readonly logger: LoggerService, // Inject the logger service
-//   ) {}
-
-//   async fetchRates(): Promise<void> {
-//     try {
-//       const response = await axios.get(this.coinGeckoUrl, {
-//         params: {
-//           ids: 'bitcoin,ethereum,oobit',
-//           vs_currencies: 'usd',
-//         },
-//         timeout: 5000, // Prevents long hangs
-//       });
-
-//       this.cache = { rates: response.data, timestamp: Date.now() };
-
-//       // Check if the fetched coins exist in TICKER_MAP and log if not
-//       for (const coin in response.data) {
-//         if (!(coin.toLowerCase() in TICKER_MAP)) {
-//           this.logger.log(
-//             `⚠️ The coin ${coin} does not exist in the TICKER_MAP and needs to be added.`,
-//           );
-//         }
-//       }
-
-//       await this.fileManager.writeFile(this.ratesFile, response.data);
-//       this.logger.log(`✅ Rates successfully written to ${this.ratesFile}`);
-//     } catch (error) {
-//       this.errorHandlingService.handleError(error); // Use the error handling service
-//       this.logger.error(`❌ Failed to fetch rates: ${error.message}`);
-//     }
-//   }
-
-//   async getRates(): Promise<any> {
-//     if (Date.now() - this.cache.timestamp < this.cacheTTL) {
-//       return this.cache.rates;
-//     }
-//     await this.fetchRates();
-//     return this.cache.rates;
-//   }
-
-//   onModuleInit() {
-//     this.logger.log('RateService initialized...'); // Use the logger here
-//   }
-// }
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { FileManagerService } from '@app/shared/file-manager/file-manager.service';
@@ -71,6 +7,8 @@ import axios from 'axios';
 import { FILE_CONSTANTS } from '@app/shared/constants/files'; // Import file constants
 import { ErrorHandlingService } from '@app/shared/error-handling/error-handling.service'; // Import the error handling service
 import { LoggerService } from '@app/shared/logger/logger.service'; // Import the logger service
+
+const baseCurrency = process.env.BASE_CURRENCY?.toUpperCase() || 'USD';
 
 @Injectable()
 export class RateService implements OnModuleInit {
@@ -92,7 +30,7 @@ export class RateService implements OnModuleInit {
     private readonly logger: LoggerService, // Inject the logger service
   ) {}
 
-  async fetchRates(currentCurrency: string = 'usd'): Promise<void> {
+  async fetchRates(currentCurrency: string = baseCurrency): Promise<void> {
     try {
       // Check if the unsupportedMarketDataIdsFile exists and has data
       let unsupportedIds: string[] = [];
@@ -118,10 +56,7 @@ export class RateService implements OnModuleInit {
           currentCurrency,
           unsupportedIds.join(','),
         );
-        console.log(
-          '🚀 ~ RateService ~ fetchRates ~ fetchedCoins:',
-          fetchedCoins,
-        );
+
         // Merge the fetched data with the original coins from the regular fetchRates
         coins = { ...fetchedCoins };
       }
@@ -146,7 +81,7 @@ export class RateService implements OnModuleInit {
 
         // Add both coin id and symbol as keys with the same data
         acc[coin.id] = coinData;
-        acc[coin.symbol] = coinData;
+        acc[coin.symbol] = { ...coinData, normalizedName: coin.id };
 
         return acc;
       }, {});
@@ -173,7 +108,10 @@ export class RateService implements OnModuleInit {
     return this.cache.rates;
   }
 
-  async fetchRatesByIds(currency: string = 'usd', ids: string): Promise<any> {
+  async fetchRatesByIds(
+    currency: string = baseCurrency,
+    ids: string,
+  ): Promise<any> {
     try {
       // Fetch data from CoinGecko for the specified ids and currency
       const response = await axios.get(this.coinGeckoUrl, {
@@ -184,7 +122,7 @@ export class RateService implements OnModuleInit {
         timeout: 5000, // Prevents long hangs
       });
 
-      if (!Object.keys(response.data).length) {
+      if (response?.data && !Object.keys(response.data).length) {
         return false;
       }
 
@@ -192,7 +130,7 @@ export class RateService implements OnModuleInit {
       const coins = Object.entries(response.data).reduce(
         (acc: any, [id, priceData]: [string, any]) => {
           acc[id] = {
-            price: priceData[currency], // Get the price for the specific currency
+            price: priceData[currency.toLowerCase()], // Get the price for the specific currency
             currency: currency,
           };
           return acc;
@@ -245,10 +183,21 @@ export class RateService implements OnModuleInit {
 
       // Return the object of coins
       return coins;
-    } catch (error) {
-      this.errorHandlingService.handleError(error); // Use the error handling service
-      this.logger.error(`❌ Failed to fetch rates with ids: ${error.message}`);
-      throw error; // Optionally rethrow the error to be handled elsewhere
+    } catch (error: any) {
+      if (error.response.status === 429 && error.response) {
+        const { headers } = error.response;
+
+        this.logger.error(`❌ Too Many Requests (429): Rate limit exceeded.`);
+        this.logger.error(
+          `🔄 Retry-After: ${headers['retry-after'] || 'unknown'}`,
+        );
+      } else {
+        this.errorHandlingService.handleError(error); // Use the error handling service
+        this.logger.error(
+          `❌ Failed to fetch rates with ids: ${error.message}`,
+        );
+        throw error; // Optionally rethrow the error to be handled elsewhere
+      }
     }
   }
 

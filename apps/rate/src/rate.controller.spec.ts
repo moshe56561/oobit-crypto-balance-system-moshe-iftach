@@ -2,6 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RateController } from './rate.controller';
 import { RateService } from './rate.service';
 
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+const baseCurrency = process.env.BASE_CURRENCY?.toUpperCase() || 'USD';
+
 describe('RateController', () => {
   let controller: RateController;
   let rateService: jest.Mocked<RateService>;
@@ -35,7 +40,10 @@ describe('RateController', () => {
 
   describe('getRatesMicroservice', () => {
     it('should call rateService.getRates and return the result', async () => {
-      const mockRates = { bitcoin: { usd: 50000 }, ethereum: { usd: 4000 } };
+      const mockRates = {
+        bitcoin: { [baseCurrency]: 50000 },
+        ethereum: { [baseCurrency]: 4000 },
+      };
       rateService.getRates.mockResolvedValue(mockRates);
 
       const result = await controller.getRatesMicroservice();

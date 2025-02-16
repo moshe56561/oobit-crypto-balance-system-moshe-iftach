@@ -13,6 +13,10 @@ export class RateQueueService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+    // First time running service getting rates.
+    await this.rateService.fetchRates();
+
+    // Cron job fetching rates every minute
     cron.schedule('* * * * *', async () => {
       try {
         await this.rateService.fetchRates();
