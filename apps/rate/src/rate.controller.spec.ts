@@ -3,14 +3,55 @@ import { RateController } from './rate.controller';
 import { RateService } from './rate.service';
 
 describe('RateController', () => {
-  let rateController: RateController;
+  let controller: RateController;
+  let rateService: jest.Mocked<RateService>;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [RateController],
-      providers: [RateService],
+      providers: [
+        {
+          provide: RateService,
+          useValue: {
+            getRates: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
-    rateController = app.get<RateController>(RateController);
+    controller = module.get<RateController>(RateController);
+    rateService = module.get<RateService>(
+      RateService,
+    ) as jest.Mocked<RateService>;
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+
+  describe('getRatesMicroservice', () => {
+    it('should call rateService.getRates and return the result', async () => {
+      const mockRates = { bitcoin: { usd: 50000 }, ethereum: { usd: 4000 } };
+      rateService.getRates.mockResolvedValue(mockRates);
+
+      const result = await controller.getRatesMicroservice();
+
+      expect(rateService.getRates).toHaveBeenCalled();
+      expect(result).toEqual(mockRates);
+    });
+
+    it('should handle errors thrown by rateService.getRates', async () => {
+      const mockError = new Error('Failed to fetch rates');
+      rateService.getRates.mockRejectedValue(mockError);
+
+      await expect(controller.getRatesMicroservice()).rejects.toThrow(
+        mockError,
+      );
+      expect(rateService.getRates).toHaveBeenCalled();
+    });
   });
 });

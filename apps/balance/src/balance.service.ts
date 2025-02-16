@@ -12,6 +12,7 @@ import { normalizeAsset } from '@app/shared/utils/normalize-asset';
 export class BalanceService {
   private readonly userBalancesFile =
     FILE_CONSTANTS.BALANCE_SERVICE.USER_BALANCES_FILE;
+  private readonly ratesFile = FILE_CONSTANTS.RATE_SERVICE.RATES_FILE;
 
   constructor(
     @Inject(MICRO_SERVICES.RATE.name) private readonly rateClient: ClientProxy,
@@ -60,7 +61,7 @@ export class BalanceService {
       for (const [asset, percentage] of Object.entries(targetPercentages)) {
         const normalizedAsset = normalizeAsset(asset); // Normalize the asset
         const targetValue = (percentage / 100) * totalValue;
-        const rate = rates[normalizedAsset]?.usd; // Use normalized asset
+        const rate = rates[normalizedAsset]?.price; // Use normalized asset
 
         if (rate) {
           newBalances[normalizedAsset] = targetValue / rate;
@@ -75,6 +76,7 @@ export class BalanceService {
       return allBalances[userId];
     } catch (error) {
       this.errorHandlingService.handleError(error, true);
+      throw error;
     }
   }
 
@@ -124,6 +126,42 @@ export class BalanceService {
     return {}; // Return an empty object if all retries fail
   }
 
+  async getRatesWithIdsFallback(asset: string): Promise<any> {
+    let retries = 3;
+    let lastError: any;
+
+    while (retries > 0) {
+      try {
+        const rate = await firstValueFrom(
+          this.rateClient.send(
+            { cmd: MESSAGE_CONSTANTS.RATE_SERVICE.GET_RATE_BY_ID },
+            { asset },
+          ),
+        );
+
+        if (rate === false) {
+          throw new HttpException(
+            `The asset "${asset}" is not supported by the system or does not exist.`,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        return rate; // Return the rate if successfully fetched
+      } catch (error) {
+        lastError = error;
+        retries--;
+        if (retries > 0)
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before retrying
+      }
+    }
+
+    this.errorHandlingService.handleError(lastError, true); // Pass true to re-throw error if needed
+    throw new HttpException(
+      `Failed to fetch rate for asset "${asset}". Please try again later.`,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+  }
+
   async getBalances(userId: string): Promise<Record<string, number>> {
     try {
       this.checkUserExists(userId); // Check if user exists
@@ -148,22 +186,31 @@ export class BalanceService {
     amount: number,
   ): Promise<any> {
     try {
-      const normalizedAsset = normalizeAsset(asset); // Normalize the asset
       let balances = this.fileManager.readFile(this.userBalancesFile);
       if (!balances[userId]) {
         balances[userId] = {};
       }
-      balances[userId][normalizedAsset] =
-        (balances[userId][normalizedAsset] || 0) + amount;
+
+      // Read the rates file and check if the asset exists
+      const rates = this.fileManager.readFile(this.ratesFile);
+
+      if (!rates[asset]) {
+        // If asset is not in ratesFile, check with RateService
+        await this.getRatesWithIdsFallback(asset);
+      }
+
+      balances[userId][asset] = (balances[userId][asset] || 0) + amount;
+
       this.fileManager.writeFile(this.userBalancesFile, balances);
 
       return {
         userId,
-        asset: normalizedAsset,
-        balance: balances[userId][normalizedAsset],
+        asset: asset,
+        balance: balances[userId][asset],
       };
     } catch (error) {
       this.errorHandlingService.handleError(error, true);
+      throw error;
     }
   }
 

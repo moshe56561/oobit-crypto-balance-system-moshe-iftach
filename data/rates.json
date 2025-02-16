@@ -1,11 +1,742 @@
 {
   "bitcoin": {
-    "usd": 97592
-  },
-  "ethereum": {
-    "usd": 2707.71
+    "price": 97500,
+    "currency": "usd"
   },
   "oobit": {
-    "usd": 0.01825836
+    "price": 0.01826574,
+    "currency": "usd"
+  },
+  "btc": {
+    "price": 97500,
+    "currency": "usd"
+  },
+  "ethereum": {
+    "price": 2687.19,
+    "currency": "usd"
+  },
+  "eth": {
+    "price": 2687.19,
+    "currency": "usd"
+  },
+  "ripple": {
+    "price": 2.77,
+    "currency": "usd"
+  },
+  "xrp": {
+    "price": 2.77,
+    "currency": "usd"
+  },
+  "tether": {
+    "price": 1,
+    "currency": "usd"
+  },
+  "usdt": {
+    "price": 1,
+    "currency": "usd"
+  },
+  "binancecoin": {
+    "price": 667.74,
+    "currency": "usd"
+  },
+  "bnb": {
+    "price": 667.74,
+    "currency": "usd"
+  },
+  "solana": {
+    "price": 194.43,
+    "currency": "usd"
+  },
+  "sol": {
+    "price": 194.43,
+    "currency": "usd"
+  },
+  "usd-coin": {
+    "price": 0.999997,
+    "currency": "usd"
+  },
+  "usdc": {
+    "price": 0.999997,
+    "currency": "usd"
+  },
+  "dogecoin": {
+    "price": 0.272894,
+    "currency": "usd"
+  },
+  "doge": {
+    "price": 0.272894,
+    "currency": "usd"
+  },
+  "cardano": {
+    "price": 0.784521,
+    "currency": "usd"
+  },
+  "ada": {
+    "price": 0.784521,
+    "currency": "usd"
+  },
+  "staked-ether": {
+    "price": 2687.53,
+    "currency": "usd"
+  },
+  "steth": {
+    "price": 2687.53,
+    "currency": "usd"
+  },
+  "tron": {
+    "price": 0.236397,
+    "currency": "usd"
+  },
+  "trx": {
+    "price": 0.236397,
+    "currency": "usd"
+  },
+  "wrapped-bitcoin": {
+    "price": 97260,
+    "currency": "usd"
+  },
+  "wbtc": {
+    "price": 97260,
+    "currency": "usd"
+  },
+  "chainlink": {
+    "price": 18.87,
+    "currency": "usd"
+  },
+  "link": {
+    "price": 18.87,
+    "currency": "usd"
+  },
+  "wrapped-steth": {
+    "price": 3210.52,
+    "currency": "usd"
+  },
+  "wsteth": {
+    "price": 3210.52,
+    "currency": "usd"
+  },
+  "stellar": {
+    "price": 0.350101,
+    "currency": "usd"
+  },
+  "xlm": {
+    "price": 0.350101,
+    "currency": "usd"
+  },
+  "avalanche-2": {
+    "price": 25.77,
+    "currency": "usd"
+  },
+  "avax": {
+    "price": 25.77,
+    "currency": "usd"
+  },
+  "sui": {
+    "price": 3.42,
+    "currency": "usd"
+  },
+  "litecoin": {
+    "price": 132.28,
+    "currency": "usd"
+  },
+  "ltc": {
+    "price": 132.28,
+    "currency": "usd"
+  },
+  "shiba-inu": {
+    "price": 0.00001631,
+    "currency": "usd"
+  },
+  "shib": {
+    "price": 0.00001631,
+    "currency": "usd"
+  },
+  "hedera-hashgraph": {
+    "price": 0.229443,
+    "currency": "usd"
+  },
+  "hbar": {
+    "price": 0.229443,
+    "currency": "usd"
+  },
+  "the-open-network": {
+    "price": 3.76,
+    "currency": "usd"
+  },
+  "ton": {
+    "price": 3.76,
+    "currency": "usd"
+  },
+  "leo-token": {
+    "price": 9.77,
+    "currency": "usd"
+  },
+  "leo": {
+    "price": 9.77,
+    "currency": "usd"
+  },
+  "usds": {
+    "price": 0.999782,
+    "currency": "usd"
+  },
+  "hyperliquid": {
+    "price": 25.83,
+    "currency": "usd"
+  },
+  "hype": {
+    "price": 25.83,
+    "currency": "usd"
+  },
+  "weth": {
+    "price": 2693.07,
+    "currency": "usd"
+  },
+  "polkadot": {
+    "price": 5.06,
+    "currency": "usd"
+  },
+  "dot": {
+    "price": 5.06,
+    "currency": "usd"
+  },
+  "mantra-dao": {
+    "price": 7.56,
+    "currency": "usd"
+  },
+  "om": {
+    "price": 7.56,
+    "currency": "usd"
+  },
+  "bitcoin-cash": {
+    "price": 335.54,
+    "currency": "usd"
+  },
+  "bch": {
+    "price": 335.54,
+    "currency": "usd"
+  },
+  "bitget-token": {
+    "price": 5.04,
+    "currency": "usd"
+  },
+  "bgb": {
+    "price": 5.04,
+    "currency": "usd"
+  },
+  "ethena-usde": {
+    "price": 0.999546,
+    "currency": "usd"
+  },
+  "usde": {
+    "price": 0.999546,
+    "currency": "usd"
+  },
+  "uniswap": {
+    "price": 9.83,
+    "currency": "usd"
+  },
+  "uni": {
+    "price": 9.83,
+    "currency": "usd"
+  },
+  "wrapped-eeth": {
+    "price": 2848.73,
+    "currency": "usd"
+  },
+  "weeth": {
+    "price": 2848.73,
+    "currency": "usd"
+  },
+  "murasaki": {
+    "price": 4.97,
+    "currency": "usd"
+  },
+  "mura": {
+    "price": 4.97,
+    "currency": "usd"
+  },
+  "monero": {
+    "price": 233.2,
+    "currency": "usd"
+  },
+  "xmr": {
+    "price": 233.2,
+    "currency": "usd"
+  },
+  "pepe": {
+    "price": 0.00000993,
+    "currency": "usd"
+  },
+  "near": {
+    "price": 3.42,
+    "currency": "usd"
+  },
+  "ondo-finance": {
+    "price": 1.27,
+    "currency": "usd"
+  },
+  "ondo": {
+    "price": 1.27,
+    "currency": "usd"
+  },
+  "whitebit": {
+    "price": 27.4,
+    "currency": "usd"
+  },
+  "wbt": {
+    "price": 27.4,
+    "currency": "usd"
+  },
+  "official-trump": {
+    "price": 19.2,
+    "currency": "usd"
+  },
+  "trump": {
+    "price": 19.2,
+    "currency": "usd"
+  },
+  "aave": {
+    "price": 254.13,
+    "currency": "usd"
+  },
+  "aptos": {
+    "price": 6.12,
+    "currency": "usd"
+  },
+  "apt": {
+    "price": 6.12,
+    "currency": "usd"
+  },
+  "dai": {
+    "price": 0.999906,
+    "currency": "usd"
+  },
+  "mantle": {
+    "price": 1.033,
+    "currency": "usd"
+  },
+  "mnt": {
+    "price": 1.033,
+    "currency": "usd"
+  },
+  "internet-computer": {
+    "price": 7.08,
+    "currency": "usd"
+  },
+  "icp": {
+    "price": 7.08,
+    "currency": "usd"
+  },
+  "susds": {
+    "price": 1.037,
+    "currency": "usd"
+  },
+  "bittensor": {
+    "price": 377.19,
+    "currency": "usd"
+  },
+  "tao": {
+    "price": 377.19,
+    "currency": "usd"
+  },
+  "ethereum-classic": {
+    "price": 20.89,
+    "currency": "usd"
+  },
+  "etc": {
+    "price": 20.89,
+    "currency": "usd"
+  },
+  "okb": {
+    "price": 51.99,
+    "currency": "usd"
+  },
+  "gatechain-token": {
+    "price": 23.31,
+    "currency": "usd"
+  },
+  "gt": {
+    "price": 23.31,
+    "currency": "usd"
+  },
+  "kaspa": {
+    "price": 0.10784,
+    "currency": "usd"
+  },
+  "kas": {
+    "price": 0.10784,
+    "currency": "usd"
+  },
+  "vechain": {
+    "price": 0.03422146,
+    "currency": "usd"
+  },
+  "vet": {
+    "price": 0.03422146,
+    "currency": "usd"
+  },
+  "polygon-ecosystem-token": {
+    "price": 0.319347,
+    "currency": "usd"
+  },
+  "pol": {
+    "price": 0.319347,
+    "currency": "usd"
+  },
+  "tokenize-xchange": {
+    "price": 31.88,
+    "currency": "usd"
+  },
+  "tkx": {
+    "price": 31.88,
+    "currency": "usd"
+  },
+  "coinbase-wrapped-btc": {
+    "price": 97514,
+    "currency": "usd"
+  },
+  "cbbtc": {
+    "price": 97514,
+    "currency": "usd"
+  },
+  "crypto-com-chain": {
+    "price": 0.089441,
+    "currency": "usd"
+  },
+  "cro": {
+    "price": 0.089441,
+    "currency": "usd"
+  },
+  "algorand": {
+    "price": 0.287547,
+    "currency": "usd"
+  },
+  "algo": {
+    "price": 0.287547,
+    "currency": "usd"
+  },
+  "jupiter-exchange-solana": {
+    "price": 0.919712,
+    "currency": "usd"
+  },
+  "jup": {
+    "price": 0.919712,
+    "currency": "usd"
+  },
+  "render-token": {
+    "price": 4.56,
+    "currency": "usd"
+  },
+  "render": {
+    "price": 4.56,
+    "currency": "usd"
+  },
+  "filecoin": {
+    "price": 3.43,
+    "currency": "usd"
+  },
+  "fil": {
+    "price": 3.43,
+    "currency": "usd"
+  },
+  "cosmos": {
+    "price": 4.85,
+    "currency": "usd"
+  },
+  "atom": {
+    "price": 4.85,
+    "currency": "usd"
+  },
+  "first-digital-usd": {
+    "price": 0.997589,
+    "currency": "usd"
+  },
+  "fdusd": {
+    "price": 0.997589,
+    "currency": "usd"
+  },
+  "arbitrum": {
+    "price": 0.477134,
+    "currency": "usd"
+  },
+  "arb": {
+    "price": 0.477134,
+    "currency": "usd"
+  },
+  "fetch-ai": {
+    "price": 0.766799,
+    "currency": "usd"
+  },
+  "fet": {
+    "price": 0.766799,
+    "currency": "usd"
+  },
+  "lombard-staked-btc": {
+    "price": 97082,
+    "currency": "usd"
+  },
+  "lbtc": {
+    "price": 97082,
+    "currency": "usd"
+  },
+  "fasttoken": {
+    "price": 3.94,
+    "currency": "usd"
+  },
+  "ftn": {
+    "price": 3.94,
+    "currency": "usd"
+  },
+  "sonic-3": {
+    "price": 0.520122,
+    "currency": "usd"
+  },
+  "s": {
+    "price": 0.520122,
+    "currency": "usd"
+  },
+  "celestia": {
+    "price": 3.09,
+    "currency": "usd"
+  },
+  "tia": {
+    "price": 3.09,
+    "currency": "usd"
+  },
+  "binance-peg-weth": {
+    "price": 2693.07,
+    "currency": "usd"
+  },
+  "lido-dao": {
+    "price": 1.81,
+    "currency": "usd"
+  },
+  "ldo": {
+    "price": 1.81,
+    "currency": "usd"
+  },
+  "binance-staked-sol": {
+    "price": 201.63,
+    "currency": "usd"
+  },
+  "bnsol": {
+    "price": 201.63,
+    "currency": "usd"
+  },
+  "raydium": {
+    "price": 5.32,
+    "currency": "usd"
+  },
+  "ray": {
+    "price": 5.32,
+    "currency": "usd"
+  },
+  "xdce-crowd-sale": {
+    "price": 0.098666,
+    "currency": "usd"
+  },
+  "xdc": {
+    "price": 0.098666,
+    "currency": "usd"
+  },
+  "kelp-dao-restaked-eth": {
+    "price": 2787.84,
+    "currency": "usd"
+  },
+  "rseth": {
+    "price": 2787.84,
+    "currency": "usd"
+  },
+  "optimism": {
+    "price": 1.14,
+    "currency": "usd"
+  },
+  "op": {
+    "price": 1.14,
+    "currency": "usd"
+  },
+  "kucoin-shares": {
+    "price": 12.16,
+    "currency": "usd"
+  },
+  "kcs": {
+    "price": 12.16,
+    "currency": "usd"
+  },
+  "injective-protocol": {
+    "price": 14.97,
+    "currency": "usd"
+  },
+  "inj": {
+    "price": 14.97,
+    "currency": "usd"
+  },
+  "solv-btc": {
+    "price": 97228,
+    "currency": "usd"
+  },
+  "solvbtc": {
+    "price": 97228,
+    "currency": "usd"
+  },
+  "ethena": {
+    "price": 0.455616,
+    "currency": "usd"
+  },
+  "ena": {
+    "price": 0.455616,
+    "currency": "usd"
+  },
+  "blockstack": {
+    "price": 0.935729,
+    "currency": "usd"
+  },
+  "stx": {
+    "price": 0.935729,
+    "currency": "usd"
+  },
+  "bonk": {
+    "price": 0.00001801,
+    "currency": "usd"
+  },
+  "immutable-x": {
+    "price": 0.794565,
+    "currency": "usd"
+  },
+  "imx": {
+    "price": 0.794565,
+    "currency": "usd"
+  },
+  "quant-network": {
+    "price": 94.95,
+    "currency": "usd"
+  },
+  "qnt": {
+    "price": 94.95,
+    "currency": "usd"
+  },
+  "theta-token": {
+    "price": 1.36,
+    "currency": "usd"
+  },
+  "theta": {
+    "price": 1.36,
+    "currency": "usd"
+  },
+  "nexo": {
+    "price": 1.36,
+    "currency": "usd"
+  },
+  "rocket-pool-eth": {
+    "price": 3016.9,
+    "currency": "usd"
+  },
+  "reth": {
+    "price": 3016.9,
+    "currency": "usd"
+  },
+  "movement": {
+    "price": 0.557075,
+    "currency": "usd"
+  },
+  "move": {
+    "price": 0.557075,
+    "currency": "usd"
+  },
+  "the-graph": {
+    "price": 0.13915,
+    "currency": "usd"
+  },
+  "grt": {
+    "price": 0.13915,
+    "currency": "usd"
+  },
+  "flare-networks": {
+    "price": 0.02195504,
+    "currency": "usd"
+  },
+  "flr": {
+    "price": 0.02195504,
+    "currency": "usd"
+  },
+  "worldcoin-wld": {
+    "price": 1.24,
+    "currency": "usd"
+  },
+  "wld": {
+    "price": 1.24,
+    "currency": "usd"
+  },
+  "mantle-staked-ether": {
+    "price": 2840.06,
+    "currency": "usd"
+  },
+  "meth": {
+    "price": 2840.06,
+    "currency": "usd"
+  },
+  "usual-usd": {
+    "price": 0.997375,
+    "currency": "usd"
+  },
+  "usd0": {
+    "price": 0.997375,
+    "currency": "usd"
+  },
+  "sei-network": {
+    "price": 0.237741,
+    "currency": "usd"
+  },
+  "sei": {
+    "price": 0.237741,
+    "currency": "usd"
+  },
+  "jasmycoin": {
+    "price": 0.02264925,
+    "currency": "usd"
+  },
+  "jasmy": {
+    "price": 0.02264925,
+    "currency": "usd"
+  },
+  "dexe": {
+    "price": 18.26,
+    "currency": "usd"
+  },
+  "gala": {
+    "price": 0.02388097,
+    "currency": "usd"
+  },
+  "solv-protocol-solvbtc-bbn": {
+    "price": 96580,
+    "currency": "usd"
+  },
+  "solvbtc.bbn": {
+    "price": 96580,
+    "currency": "usd"
+  },
+  "eos": {
+    "price": 0.652114,
+    "currency": "usd"
+  },
+  "msol": {
+    "price": 246.62,
+    "currency": "usd"
+  },
+  "telcoin": {
+    "price": 0.01272258,
+    "currency": "usd"
+  },
+  "tel": {
+    "price": 0.01272258,
+    "currency": "usd"
+  },
+  "the-sandbox": {
+    "price": 0.397869,
+    "currency": "usd"
+  },
+  "sand": {
+    "price": 0.397869,
+    "currency": "usd"
   }
 }

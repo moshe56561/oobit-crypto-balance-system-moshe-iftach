@@ -31,6 +31,23 @@ export class FileManagerService {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
   }
 
+  // Append data to a file without overwriting
+  appendToFile(fileName: string, data: string): void {
+    const filePath = path.join(this.dataPath, fileName);
+
+    // If the file doesn't exist, create it and write the data
+    if (!fs.existsSync(filePath)) {
+      this.writeFile(fileName, data); // Write if file doesn't exist
+    } else {
+      // Read the existing data, if any
+      const existingData = fs.readFileSync(filePath, 'utf8');
+      const updatedData = existingData ? `${existingData},${data}` : data; // Append data to existing content
+
+      // Write the updated content back to the file
+      fs.writeFileSync(filePath, updatedData, 'utf8');
+    }
+  }
+
   // Helper method to check if a file exists
   fileExists(fileName: string): boolean {
     const filePath = path.join(this.dataPath, fileName);
